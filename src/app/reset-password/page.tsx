@@ -31,7 +31,7 @@ export default function ResetPasswordPage() {
         <Field label="New password">
           <Input type="password" autoComplete="new-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
         </Field>
-        {error && <p className="text-sm text-red-300">{error}</p>}
+        {error && <p className="text-sm text-danger">{error}</p>}
         <Button type="submit" loading={loading} className="w-full">
           Update password
         </Button>

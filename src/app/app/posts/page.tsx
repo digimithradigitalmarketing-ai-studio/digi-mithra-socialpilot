@@ -222,7 +222,7 @@ function PostDetail({
             </div>
             {post.title && <p className="mt-2 font-semibold">{post.title}</p>}
             <p className="mt-1 text-sm break-words whitespace-pre-wrap text-ink/90">{post.body}</p>
-            {(post.hashtags ?? []).length > 0 && <p className="mt-1 text-sm break-words text-brand">{(post.hashtags ?? []).map((h) => `#${h}`).join(" ")}</p>}
+            {(post.hashtags ?? []).length > 0 && <p className="mt-1 text-sm break-words text-brand-ink">{(post.hashtags ?? []).map((h) => `#${h}`).join(" ")}</p>}
             <div className="mt-2 grid gap-1 text-xs text-muted sm:grid-cols-2">
               <span>Scheduled: {formatDate(post.scheduled_at)}</span>
               <span>Published: {formatDate(post.published_at)}</span>
@@ -244,7 +244,7 @@ function PostDetail({
                     <Badge tone={targetTone[t.status]}>{t.status}</Badge>
                   </div>
                   {t.external_post_id && <p className="mt-1.5 font-mono text-[11px] break-all text-faint">ID: {t.external_post_id}</p>}
-                  {t.error && <p className="mt-1.5 text-xs text-red-300">{t.error}</p>}
+                  {t.error && <p className="mt-1.5 text-xs text-danger">{t.error}</p>}
                   {t.customized_body && <p className="mt-1.5 text-xs break-words whitespace-pre-wrap text-muted">Custom: {t.customized_body}</p>}
                 </div>
               ))}
@@ -261,7 +261,7 @@ function PostDetail({
                     <div key={a.id} className="flex flex-wrap items-center gap-2 rounded-lg bg-bg px-3 py-2 text-xs">
                       <Badge tone={a.status === "success" ? "green" : a.status === "failed" ? "red" : "yellow"}>{a.status}</Badge>
                       <span className="text-muted">{providerName(t?.social_accounts?.provider ?? "")}</span>
-                      {a.error_category && <span className="text-red-300">{a.error_category.replace(/_/g, " ")}</span>}
+                      {a.error_category && <span className="text-danger">{a.error_category.replace(/_/g, " ")}</span>}
                       {typeof a.response?.note === "string" && <span className="text-faint">{a.response.note}</span>}
                       <span className="ml-auto text-faint">{formatDate(a.created_at)}</span>
                     </div>

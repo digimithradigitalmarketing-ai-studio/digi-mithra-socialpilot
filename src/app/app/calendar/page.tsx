@@ -12,14 +12,14 @@ import { cn, errMsg } from "@/lib/utils";
 
 const DOT: Record<PostStatus, string> = {
   draft: "bg-zinc-400",
-  approval_pending: "bg-amber-300",
-  approved: "bg-sky-300",
-  rejected: "bg-red-400",
-  scheduled: "bg-violet-400",
-  publishing: "bg-sky-400",
+  approval_pending: "bg-warn",
+  approved: "bg-info",
+  rejected: "bg-danger",
+  scheduled: "bg-purple",
+  publishing: "bg-info",
   published: "bg-brand",
-  partially_failed: "bg-amber-400",
-  failed: "bg-red-500",
+  partially_failed: "bg-warn",
+  failed: "bg-danger",
 };
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -32,7 +32,7 @@ function PostChip({ p }: { p: ContentPost }) {
   return (
     <Link
       href={`/app/posts?id=${p.id}`}
-      className="flex items-center gap-1.5 truncate rounded-md bg-white/5 px-1.5 py-0.5 text-[11px] hover:bg-white/10"
+      className="flex items-center gap-1.5 truncate rounded-md bg-ink/5 px-1.5 py-0.5 text-[11px] hover:bg-ink/10"
       title={p.title ?? p.body}
     >
       <span className={cn("size-1.5 shrink-0 rounded-full", DOT[p.status])} />
@@ -186,7 +186,7 @@ export default function CalendarPage() {
                       )}
                     >
                       <div className="mb-1 flex items-center justify-between">
-                        <span className={cn("grid size-6 place-items-center rounded-full text-xs", k === today ? "bg-brand font-bold text-black" : "text-muted")}>
+                        <span className={cn("grid size-6 place-items-center rounded-full text-xs", k === today ? "bg-brand font-bold text-on-brand" : "text-muted")}>
                           {d.getDate()}
                         </span>
                         {can("write_content") && (
@@ -194,7 +194,7 @@ export default function CalendarPage() {
                             href="/app/compose"
                             onClick={(e) => e.stopPropagation()}
                             aria-label="New post"
-                            className="hidden rounded p-0.5 text-faint group-hover:block hover:text-brand"
+                            className="hidden rounded p-0.5 text-faint group-hover:block hover:text-brand-ink"
                           >
                             <Plus className="size-3.5" />
                           </Link>
@@ -205,7 +205,7 @@ export default function CalendarPage() {
                           <PostChip key={p.id} p={p} />
                         ))}
                         {list.length > 3 && (
-                          <button onClick={() => setSelected(d)} className="px-1.5 text-[11px] text-brand">
+                          <button onClick={() => setSelected(d)} className="px-1.5 text-[11px] text-brand-ink">
                             +{list.length - 3} more
                           </button>
                         )}
@@ -248,7 +248,7 @@ export default function CalendarPage() {
                   const d = postDate(list[0]);
                   return (
                     <Card key={k} className="overflow-hidden">
-                      <div className={cn("border-b border-line px-4 py-2 text-xs font-semibold", k === today ? "text-brand" : "text-muted")}>
+                      <div className={cn("border-b border-line px-4 py-2 text-xs font-semibold", k === today ? "text-brand-ink" : "text-muted")}>
                         {d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" })}
                         {k === today && " · Today"}
                       </div>

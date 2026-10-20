@@ -34,15 +34,15 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             key={t.id}
             className={cn(
               "animate-fade-up pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl border bg-panel-2 px-4 py-3 text-sm shadow-2xl",
-              t.kind === "error" ? "border-red-500/40" : t.kind === "info" ? "border-sky-500/40" : "border-brand/40",
+              t.kind === "error" ? "border-danger/30" : t.kind === "info" ? "border-info/30" : "border-brand/40",
             )}
           >
             {t.kind === "error" ? (
-              <AlertTriangle className="mt-0.5 size-4 shrink-0 text-red-400" />
+              <AlertTriangle className="mt-0.5 size-4 shrink-0 text-danger" />
             ) : t.kind === "info" ? (
-              <Info className="mt-0.5 size-4 shrink-0 text-sky-400" />
+              <Info className="mt-0.5 size-4 shrink-0 text-info" />
             ) : (
-              <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-brand" />
+              <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-brand-ink" />
             )}
             <span className="flex-1 leading-snug">{t.text}</span>
             <button

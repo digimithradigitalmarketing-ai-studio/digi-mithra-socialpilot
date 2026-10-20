@@ -7,7 +7,7 @@ export function ProviderIcon({ provider, className }: { provider: string; classN
   return (
     <span
       title={p?.name ?? provider}
-      className={cn("grid size-8 shrink-0 place-items-center rounded-lg text-[11px] font-bold text-black", className)}
+      className={cn("grid size-8 shrink-0 place-items-center rounded-lg text-[11px] font-bold text-white", className)}
       style={{ background: p?.color ?? "#64748b" }}
     >
       {p?.short ?? provider.slice(0, 2).toUpperCase()}

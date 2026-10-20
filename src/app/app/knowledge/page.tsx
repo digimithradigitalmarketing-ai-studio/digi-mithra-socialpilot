@@ -180,7 +180,7 @@ export default function KnowledgePage() {
                                 <Pencil className="size-4" />
                               </Button>
                               <Button size="icon" variant="ghost" aria-label="Delete" onClick={() => remove(e)}>
-                                <Trash2 className="size-4 text-red-300" />
+                                <Trash2 className="size-4 text-danger" />
                               </Button>
                             </div>
                           )}

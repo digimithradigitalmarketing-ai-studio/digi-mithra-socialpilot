@@ -38,6 +38,7 @@ import {
 import { useToast } from "@/components/toast";
 import { ProviderIcon, providerName } from "@/components/provider-badge";
 import { PROVIDERS } from "@/lib/providers";
+import { AiImageModal } from "@/components/ai-image-modal";
 import type { ContentPost, MediaAsset, PostTarget, Provider, SocialAccount } from "@/lib/types";
 import { cn, errMsg, toLocalInput } from "@/lib/utils";
 
@@ -91,6 +92,7 @@ function ComposeInner() {
   const [saving, setSaving] = useState<null | "draft" | "schedule" | "now">(null);
   const [aiBusy, setAiBusy] = useState<AiKind | null>(null);
   const [mediaOpen, setMediaOpen] = useState(false);
+  const [aiImageOpen, setAiImageOpen] = useState(false);
   const [language, setLanguage] = useState("Hindi");
   const [tone, setTone] = useState("friendly");
 
@@ -363,7 +365,7 @@ function ComposeInner() {
       />
 
       {locked && (
-        <Card className="mb-4 border-amber-400/30 p-4 text-sm text-amber-200">
+        <Card className="mb-4 border-warn/30 p-4 text-sm text-warn">
           This post is {existing?.status} and can no longer be edited.{" "}
           <Link href={`/app/posts?id=${existing?.id}`} className="underline">
             View post
@@ -393,7 +395,7 @@ function ComposeInner() {
                     <ProviderIcon provider={a.provider} className="size-7" />
                     <span className="max-w-40 truncate">{a.display_name ?? providerName(a.provider)}</span>
                     {a.is_demo && <DemoBadge />}
-                    {on && <Check className="size-4 text-brand" />}
+                    {on && <Check className="size-4 text-brand-ink" />}
                   </button>
                 );
               })}
@@ -540,7 +542,7 @@ function ComposeInner() {
                         <p
                           className={cn(
                             "mt-1 text-right text-[11px]",
-                            (custom[a.id]?.length ?? 0) > PROVIDERS[a.provider].charLimit ? "text-red-300" : "text-faint",
+                            (custom[a.id]?.length ?? 0) > PROVIDERS[a.provider].charLimit ? "text-danger" : "text-faint",
                           )}
                         >
                           {custom[a.id]?.length ?? 0}/{PROVIDERS[a.provider].charLimit}
@@ -574,7 +576,7 @@ function ComposeInner() {
               <p className="text-[11px] text-muted">Editors&apos; posts go to Approvals first. Managers and admins can publish directly.</p>
             )}
             {selectedAccounts.some((a) => a.is_demo) && (
-              <p className="text-[11px] text-amber-300/80">Demo accounts simulate publishing — nothing is posted to the real network.</p>
+              <p className="text-[11px] text-warn">Demo accounts simulate publishing — nothing is posted to the real network.</p>
             )}
           </Card>
 
@@ -609,7 +611,7 @@ function ComposeInner() {
                         {text.length > limit ? (
                           <>
                             {text.slice(0, limit)}
-                            <span className="bg-red-500/30 text-red-200">{text.slice(limit)}</span>
+                            <span className="bg-danger/30 text-danger">{text.slice(limit)}</span>
                           </>
                         ) : (
                           text || <span className="text-faint">Your caption will appear here…</span>
@@ -624,6 +626,16 @@ function ComposeInner() {
         </div>
       </div>
 
+      <AiImageModal
+        open={aiImageOpen}
+        onClose={() => setAiImageOpen(false)}
+        onCreated={(asset, url) => {
+          setMedia((prev) => [asset, ...prev.filter((x) => x.id !== asset.id)]);
+          if (url) setMediaUrls((prev) => ({ ...prev, [asset.storage_path]: url }));
+          setMediaIds((ids) => (ids.includes(asset.id) ? ids : [...ids, asset.id].slice(0, 10)));
+        }}
+      />
+
       <Modal
         open={mediaOpen}
         onClose={() => setMediaOpen(false)}
@@ -634,6 +646,9 @@ function ComposeInner() {
             <Link href="/app/media">
               <Button variant="ghost">Upload in library</Button>
             </Link>
+            <Button variant="secondary" onClick={() => setAiImageOpen(true)}>
+              <Sparkles className="size-4" /> Generate image
+            </Button>
             <Button onClick={() => setMediaOpen(false)}>Done ({mediaIds.length})</Button>
           </>
         }
@@ -659,7 +674,7 @@ function ComposeInner() {
                   )}
                   {on && (
                     <span className="absolute top-1 right-1 rounded-full bg-brand p-0.5">
-                      <Check className="size-3 text-black" />
+                      <Check className="size-3 text-on-brand" />
                     </span>
                   )}
                 </button>

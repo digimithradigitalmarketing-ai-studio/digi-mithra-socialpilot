@@ -41,7 +41,7 @@ function Stars({ value, size = "size-4" }: { value: number; size?: string }) {
   return (
     <span className="inline-flex gap-0.5" aria-label={`${value} out of 5 stars`}>
       {[1, 2, 3, 4, 5].map((i) => (
-        <Star key={i} className={cn(size, i <= value ? "fill-amber-300 text-amber-300" : "text-line-2")} />
+        <Star key={i} className={cn(size, i <= value ? "fill-warn text-warn" : "text-line-2")} />
       ))}
     </span>
   );
@@ -133,10 +133,10 @@ export default function ReviewsPage() {
             {dist.map((d) => (
               <div key={d.n} className="flex items-center gap-2 text-xs">
                 <span className="w-3 text-muted">{d.n}</span>
-                <Star className="size-3 fill-amber-300 text-amber-300" />
+                <Star className="size-3 fill-warn text-warn" />
                 <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-line">
                   <div
-                    className="h-full rounded-full bg-amber-300"
+                    className="h-full rounded-full bg-warn"
                     style={{ width: `${reviews.length ? (d.count / reviews.length) * 100 : 0}%` }}
                   />
                 </div>
@@ -253,7 +253,7 @@ function ReviewCard({ review: r, onChanged }: { review: Review; onChanged: () =>
 
           {r.reply && !editing && (
             <div className="mt-3 rounded-xl border-l-2 border-brand bg-panel-2 px-3 py-2">
-              <p className="text-[11px] font-semibold text-brand">Your reply · {timeAgo(r.replied_at)}</p>
+              <p className="text-[11px] font-semibold text-brand-ink">Your reply · {timeAgo(r.replied_at)}</p>
               <p className="mt-0.5 text-sm">{r.reply}</p>
             </div>
           )}
@@ -356,7 +356,7 @@ function AddReviewModal({ open, onClose, onDone }: { open: boolean; onClose: () 
             <div className="flex h-10 items-center gap-1">
               {[1, 2, 3, 4, 5].map((i) => (
                 <button key={i} type="button" onClick={() => setRating(i)} aria-label={`${i} stars`}>
-                  <Star className={cn("size-6", i <= rating ? "fill-amber-300 text-amber-300" : "text-line-2")} />
+                  <Star className={cn("size-6", i <= rating ? "fill-warn text-warn" : "text-line-2")} />
                 </button>
               ))}
             </div>

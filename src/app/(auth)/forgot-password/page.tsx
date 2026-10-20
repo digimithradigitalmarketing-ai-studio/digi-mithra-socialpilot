@@ -33,8 +33,8 @@ export default function ForgotPasswordPage() {
       <Field label="Email">
         <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
       </Field>
-      {error && <p className="text-sm text-red-300">{error}</p>}
-      {msg && <p className="rounded-lg border border-brand/30 bg-brand/10 px-3 py-2 text-sm text-brand">{msg}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
+      {msg && <p className="rounded-lg border border-brand/30 bg-brand/10 px-3 py-2 text-sm text-brand-ink">{msg}</p>}
       <Button type="submit" loading={loading} className="w-full">
         Send reset link
       </Button>

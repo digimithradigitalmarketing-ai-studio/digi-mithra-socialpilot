@@ -1,11 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Copy, Film, Image as ImageIcon, Search, Trash2, Upload } from "lucide-react";
+import { Copy, Film, Image as ImageIcon, Search, Sparkles, Trash2, Upload } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useApp } from "@/components/app-context";
 import { Button, Card, EmptyState, Input, LoadingBlock, PageHeader } from "@/components/ui";
 import { useToast } from "@/components/toast";
+import { AiImageModal } from "@/components/ai-image-modal";
 import type { MediaAsset } from "@/lib/types";
 import { cn, errMsg, timeAgo } from "@/lib/utils";
 
@@ -28,6 +29,7 @@ export default function MediaPage() {
   const [uploading, setUploading] = useState(0);
   const [drag, setDrag] = useState(false);
   const [q, setQ] = useState("");
+  const [aiOpen, setAiOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const write = can("write_content");
 
@@ -124,9 +126,14 @@ export default function MediaPage() {
         description="Private images and videos for this workspace. Links are signed and expire."
         actions={
           write && (
-            <Button onClick={() => inputRef.current?.click()} loading={uploading > 0}>
-              <Upload className="size-4" /> Upload
-            </Button>
+            <>
+              <Button variant="secondary" onClick={() => setAiOpen(true)}>
+                <Sparkles className="size-4" /> Generate with AI
+              </Button>
+              <Button onClick={() => inputRef.current?.click()} loading={uploading > 0}>
+                <Upload className="size-4" /> Upload
+              </Button>
+            </>
           )
         }
       />
@@ -139,6 +146,15 @@ export default function MediaPage() {
         onChange={(e) => {
           if (e.target.files) upload(e.target.files);
           e.target.value = "";
+        }}
+      />
+
+      <AiImageModal
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        onCreated={(asset, url) => {
+          setAssets((prev) => [asset, ...prev.filter((x) => x.id !== asset.id)]);
+          if (url) setUrls((prev) => ({ ...prev, [asset.storage_path]: url }));
         }}
       />
 
@@ -160,7 +176,7 @@ export default function MediaPage() {
             drag ? "border-brand bg-brand/5" : "border-line-2 hover:border-brand/50",
           )}
         >
-          <Upload className="mb-2 size-6 text-brand" />
+          <Upload className="mb-2 size-6 text-brand-ink" />
           <p className="text-sm font-medium">{uploading > 0 ? `Uploading ${uploading}…` : "Drop images or videos here"}</p>
           <p className="text-xs text-muted">or tap to browse · up to 50 MB each</p>
         </div>
@@ -198,6 +214,11 @@ export default function MediaPage() {
                   {isVideo && (
                     <span className="absolute top-2 left-2 rounded-md bg-black/70 p-1">
                       <Film className="size-3.5 text-brand" />
+                    </span>
+                  )}
+                  {a.tags?.includes("ai-generated") && (
+                    <span title="AI-generated image" className="absolute top-2 right-2 rounded-md bg-black/70 px-1.5 py-0.5 text-[10px] font-bold text-brand">
+                      AI
                     </span>
                   )}
                 </div>

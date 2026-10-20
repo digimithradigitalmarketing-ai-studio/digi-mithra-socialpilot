@@ -109,7 +109,7 @@ export default function BillingPage() {
     <div>
       <PageHeader title="Plan & billing" description="Subscription, usage limits and invoices for your organization." />
 
-      <div className="mb-5 flex items-start gap-3 rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-200">
+      <div className="mb-5 flex items-start gap-3 rounded-xl border border-warn/30 bg-warn/10 px-4 py-3 text-sm text-warn">
         <Info className="mt-0.5 size-4 shrink-0" />
         <p>Demo billing mode — no payment is taken; Razorpay checkout can be enabled later. Limits below are enforced by the server.</p>
       </div>
@@ -135,7 +135,7 @@ export default function BillingPage() {
               </div>
             )}
             {effective && current && effective.id !== current.id && (
-              <p className="rounded-lg bg-red-500/10 px-3 py-2 text-xs text-red-300">
+              <p className="rounded-lg bg-danger/10 px-3 py-2 text-xs text-danger">
                 Subscription inactive — {effective.name} limits currently apply.
               </p>
             )}
@@ -191,7 +191,7 @@ export default function BillingPage() {
                 <li className="text-muted">{p.ai_credits_per_month >= 100000 ? "Custom" : p.ai_credits_per_month.toLocaleString("en-IN")} AI credits/mo</li>
                 {p.features.map((f) => (
                   <li key={f} className="flex items-start gap-2">
-                    <Check className="mt-0.5 size-4 shrink-0 text-brand" /> {f}
+                    <Check className="mt-0.5 size-4 shrink-0 text-brand-ink" /> {f}
                   </li>
                 ))}
               </ul>

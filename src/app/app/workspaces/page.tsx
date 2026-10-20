@@ -7,6 +7,7 @@ import { useApp } from "@/components/app-context";
 import { useToast } from "@/components/toast";
 import { Badge, Button, Card, CardHeader, EmptyState, Field, Input, LoadingBlock, Modal, PageHeader, Select } from "@/components/ui";
 import { cn, errMsg, formatDate, slugify, timeAgo } from "@/lib/utils";
+import { ROLE_DESCRIPTIONS, roleLabel } from "@/lib/roles";
 import type { Workspace } from "@/lib/types";
 
 const INDUSTRIES = ["fitness", "events & production", "salon & spa", "restaurant", "retail", "education", "real estate", "healthcare", "agency", "other"];
@@ -14,15 +15,9 @@ const TIMEZONES = ["Asia/Kolkata", "Asia/Dubai", "Asia/Singapore", "Europe/Londo
 const INVITE_ROLES = ["admin", "manager", "editor", "support", "analyst", "viewer", "approver"] as const;
 const WS_ROLES = ["manager", "editor", "support", "analyst", "viewer", "approver"] as const;
 
-const ROLE_HELP: Record<string, string> = {
-  admin: "Everything in the organization except owner-only billing and deletion.",
-  manager: "Manages a workspace: accounts, approvals, content, inbox, automations.",
-  editor: "Creates and schedules content; posts may need approval.",
-  support: "Handles assigned inbox conversations, contacts and leads.",
-  analyst: "Read-only reports and dashboards.",
-  viewer: "Read-only access.",
-  approver: "Client approver — can approve or reject posts only.",
-};
+const ROLE_HELP: Record<string, string> = Object.fromEntries(
+  ["admin", "manager", "editor", "support", "analyst", "approver", "viewer"].map((r) => [r, ROLE_DESCRIPTIONS[r]]),
+);
 
 interface Invitation {
   id: string;
@@ -198,7 +193,7 @@ export default function WorkspacesPage() {
           return (
             <Card key={w.id} className={cn("p-4", w.id === currentWs.id && "border-brand/60")}>
               <div className="flex items-start gap-3">
-                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand/15 font-bold text-brand">{w.name.slice(0, 1).toUpperCase()}</span>
+                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand/15 font-bold text-brand-ink">{w.name.slice(0, 1).toUpperCase()}</span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold">{w.name}</p>
                   <p className="truncate text-xs text-muted capitalize">
@@ -241,7 +236,7 @@ export default function WorkspacesPage() {
                     <li key={i.id} className="px-4 py-3 sm:px-5">
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="min-w-0 flex-1 truncate text-sm font-medium">{i.email}</p>
-                        <Badge tone="purple">{i.role}</Badge>
+                        <Badge tone="purple">{roleLabel(i.role)}</Badge>
                       </div>
                       <p className="mt-0.5 text-xs text-muted">
                         {wsName(i.workspace_id)} · sent {timeAgo(i.created_at)}
@@ -278,16 +273,16 @@ export default function WorkspacesPage() {
                         <Select className="h-8 w-32 text-xs" value={m.role} onChange={(e) => changeWsRole(m, e.target.value)}>
                           {WS_ROLES.map((r) => (
                             <option key={r} value={r}>
-                              {r}
+                              {roleLabel(r)}
                             </option>
                           ))}
                         </Select>
                         <Button size="icon" variant="ghost" aria-label="Remove from workspace" onClick={() => removeWsMember(m)}>
-                          <UserMinus className="size-4 text-red-300" />
+                          <UserMinus className="size-4 text-danger" />
                         </Button>
                       </div>
                     ) : (
-                      <Badge>{m.role}</Badge>
+                      <Badge>{roleLabel(m.role)}</Badge>
                     )}
                   </li>
                 ))}
@@ -300,7 +295,7 @@ export default function WorkspacesPage() {
             <dl className="grid gap-3 p-4 text-sm sm:grid-cols-2 sm:p-5">
               {Object.entries(ROLE_HELP).map(([r, d]) => (
                 <div key={r}>
-                  <dt className="font-medium capitalize text-brand">{r}</dt>
+                  <dt className="font-medium text-brand-ink">{roleLabel(r)}</dt>
                   <dd className="text-muted">{d}</dd>
                 </div>
               ))}
@@ -374,7 +369,7 @@ export default function WorkspacesPage() {
             <Select value={invite.role} onChange={(e) => setInvite({ ...invite, role: e.target.value })}>
               {INVITE_ROLES.map((r) => (
                 <option key={r} value={r}>
-                  {r}
+                  {roleLabel(r)}
                 </option>
               ))}
             </Select>

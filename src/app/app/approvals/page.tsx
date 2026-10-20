@@ -125,7 +125,7 @@ export default function ApprovalsPage() {
                   </div>
                   {p.title && <p className="mt-2 font-semibold">{p.title}</p>}
                   <p className="mt-1 text-sm break-words whitespace-pre-wrap">{p.body}</p>
-                  {(p.hashtags ?? []).length > 0 && <p className="mt-1 text-sm break-words text-brand">{(p.hashtags ?? []).map((h) => `#${h}`).join(" ")}</p>}
+                  {(p.hashtags ?? []).length > 0 && <p className="mt-1 text-sm break-words text-brand-ink">{(p.hashtags ?? []).map((h) => `#${h}`).join(" ")}</p>}
 
                   <div className="mt-3 flex flex-wrap gap-2">
                     {(p.post_targets ?? []).map((t) => (
@@ -165,7 +165,7 @@ export default function ApprovalsPage() {
                         <Button size="sm" variant="danger" loading={busy === `${p.id}:rejected`} disabled={!!busy} onClick={() => decide(p, "rejected")}>
                           <X className="size-3.5" /> Reject
                         </Button>
-                        <Link href={`/app/posts?id=${p.id}`} className="ml-auto self-center text-xs text-muted hover:text-brand">
+                        <Link href={`/app/posts?id=${p.id}`} className="ml-auto self-center text-xs text-muted hover:text-brand-ink">
                           Details →
                         </Link>
                       </div>

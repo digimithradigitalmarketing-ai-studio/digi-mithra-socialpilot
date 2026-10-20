@@ -1,6 +1,34 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Light theme (default): DigiMithra white, black & neon green */
 @theme {
+  --color-bg: #f6f8f4;
+  --color-panel: #ffffff;
+  --color-panel-2: #f4f7f1;
+  --color-line: #e6ebe2;
+  --color-line-2: #d6ddd0;
+  --color-ink: #0b0f0a;
+  --color-muted: #586153;
+  --color-faint: #8a9384;
+  --color-brand: #8bdc2b;
+  --color-brand-2: #a6ec4f;
+  --color-brand-deep: #4d9a12;
+  --color-brand-ink: #3b7a0c;
+  --color-on-brand: #0b0f0a;
+  --color-danger: #dc2626;
+  --color-warn: #b8680a;
+  --color-info: #0b7fb8;
+  --color-purple: #7c3aed;
+  --color-ok: #2f8f12;
+  --font-sans: "Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --shadow-soft: 0 1px 2px rgb(16 24 64 / 0.04), 0 6px 24px -8px rgb(30 60 160 / 0.12);
+}
+
+/* Dark theme: Digi Mithra black & lime */
+[data-theme="dark"] {
   --color-bg: #050805;
   --color-panel: #0b110b;
   --color-panel-2: #111a11;
@@ -12,12 +40,19 @@
   --color-brand: #8bdc2b;
   --color-brand-2: #b6f04a;
   --color-brand-deep: #4d9a12;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --color-brand-ink: #9be640;
+  --color-on-brand: #050805;
+  --color-danger: #fca5a5;
+  --color-warn: #fcd34d;
+  --color-info: #7dd3fc;
+  --color-purple: #c4b5fd;
+  --color-ok: #8bdc2b;
+  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.4);
+  color-scheme: dark;
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html,
@@ -32,7 +67,7 @@ body {
 }
 
 ::selection {
-  background: color-mix(in oklab, var(--color-brand) 40%, transparent);
+  background: color-mix(in oklab, var(--color-brand) 25%, transparent);
 }
 
 * {
@@ -40,17 +75,58 @@ body {
   scrollbar-color: var(--color-line-2) transparent;
 }
 
+/* soft pastel wash behind app content */
+.app-wash {
+  background:
+    radial-gradient(40% 35% at 0% 0%, rgb(139 220 43 / 0.10), transparent 70%),
+    radial-gradient(45% 40% at 100% 0%, rgb(220 252 231 / 0.7), transparent 70%),
+    radial-gradient(50% 40% at 60% 100%, rgb(241 245 236 / 0.9), transparent 70%),
+    var(--color-bg);
+}
+[data-theme="dark"] .app-wash {
+  background:
+    radial-gradient(60% 50% at 50% 0%, color-mix(in oklab, var(--color-brand) 10%, transparent), transparent 70%),
+    var(--color-bg);
+}
+
 .brand-glow {
+  background:
+    radial-gradient(50% 45% at 15% 0%, rgb(139 220 43 / 0.16), transparent 70%),
+    radial-gradient(55% 50% at 90% 10%, rgb(220 252 231 / 0.9), transparent 70%),
+    var(--color-bg);
+}
+[data-theme="dark"] .brand-glow {
   background:
     radial-gradient(60% 50% at 50% 0%, color-mix(in oklab, var(--color-brand) 18%, transparent), transparent 70%),
     var(--color-bg);
 }
 
+/* pastel tints for feature cards */
+.tint-blue { background: linear-gradient(135deg, #f1fbe6, #e2f6cc); }
+.tint-amber { background: linear-gradient(135deg, #fff9ec, #fff1d6); }
+.tint-green { background: linear-gradient(135deg, #ecfbf3, #dcf5e8); }
+.tint-rose { background: linear-gradient(135deg, #fff1f2, #ffe2e6); }
+.tint-violet { background: linear-gradient(135deg, #f5f1ff, #ebe4ff); }
+.tint-sky { background: linear-gradient(135deg, #eefaff, #dcf2fd); }
+[data-theme="dark"] :is(.tint-blue, .tint-amber, .tint-green, .tint-rose, .tint-violet, .tint-sky) {
+  background: var(--color-panel-2);
+}
+
+.shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+
 .text-gradient {
-  background: linear-gradient(90deg, var(--color-brand-2), var(--color-brand));
+  background: linear-gradient(90deg, #5cae17, #2d6e05);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+[data-theme="dark"] .text-gradient {
+  background: linear-gradient(90deg, var(--color-brand-2), var(--color-brand));
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 
 .safe-bottom {

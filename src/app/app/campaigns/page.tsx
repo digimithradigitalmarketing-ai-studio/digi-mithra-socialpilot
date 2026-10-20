@@ -123,7 +123,7 @@ export default function CampaignsPage() {
                     <p className="text-[10px] text-faint">Posts</p>
                   </div>
                   <div className="rounded-lg bg-panel-2 py-2">
-                    <p className="text-lg font-bold tabular-nums text-brand">{n.published}</p>
+                    <p className="text-lg font-bold tabular-nums text-brand-ink">{n.published}</p>
                     <p className="text-[10px] text-faint">Published</p>
                   </div>
                 </div>

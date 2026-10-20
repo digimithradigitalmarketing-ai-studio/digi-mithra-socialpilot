@@ -102,7 +102,7 @@ function Onboarding() {
       {(inviteToken || invites.length > 0) && (
         <Card className="p-5">
           <h2 className="mb-3 flex items-center gap-2 font-semibold">
-            <MailOpen className="size-4 text-brand" /> Invitations
+            <MailOpen className="size-4 text-brand-ink" /> Invitations
           </h2>
           {inviteToken && !invites.some((i) => i.token === inviteToken) && (
             <div className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-line-2 p-3">
@@ -150,7 +150,7 @@ function Onboarding() {
                   kind === o.v ? "border-brand bg-brand/10" : "border-line-2 hover:border-brand/40",
                 )}
               >
-                <o.icon className={cn("size-5", kind === o.v ? "text-brand" : "text-muted")} />
+                <o.icon className={cn("size-5", kind === o.v ? "text-brand-ink" : "text-muted")} />
                 <p className="mt-2 text-sm font-semibold">{o.title}</p>
                 <p className="text-xs text-muted">{o.text}</p>
               </button>

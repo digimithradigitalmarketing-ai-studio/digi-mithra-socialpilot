@@ -420,7 +420,7 @@ function LeadFormModal({
               <button
                 key={m}
                 onClick={() => setContactMode(m)}
-                className={cn("rounded-md px-2.5 py-1 text-xs font-medium", contactMode === m ? "bg-brand text-black" : "text-muted")}
+                className={cn("rounded-md px-2.5 py-1 text-xs font-medium", contactMode === m ? "bg-brand text-on-brand" : "text-muted")}
               >
                 {m === "existing" ? "Existing contact" : "New contact"}
               </button>
@@ -642,7 +642,7 @@ function LeadDetailModal({
               <li key={a.id} className="flex gap-2 rounded-lg bg-panel-2 px-3 py-2">
                 {a.kind === "task" ? (
                   <button onClick={() => editable && toggleDone(a)} aria-label="Toggle done" className="mt-0.5">
-                    {a.done ? <CheckCircle2 className="size-4 text-brand" /> : <Circle className="size-4 text-muted" />}
+                    {a.done ? <CheckCircle2 className="size-4 text-brand-ink" /> : <Circle className="size-4 text-muted" />}
                   </button>
                 ) : (
                   <span className="mt-1.5 size-2 shrink-0 rounded-full bg-brand/60" />

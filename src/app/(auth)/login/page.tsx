@@ -42,7 +42,7 @@ function LoginForm() {
       <Field label="Password">
         <Input type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
       </Field>
-      {error && <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">{error}</p>}
+      {error && <p className="rounded-lg border border-danger/30 bg-danger/10 px-3 py-2 text-sm text-danger">{error}</p>}
       <Button type="submit" loading={loading} className="w-full">
         Sign in
       </Button>
@@ -50,7 +50,7 @@ function LoginForm() {
         <Link href="/forgot-password" className="text-muted hover:text-ink">
           Forgot password?
         </Link>
-        <Link href="/signup" className="text-brand hover:underline">
+        <Link href="/signup" className="text-brand-ink hover:underline">
           Create account
         </Link>
       </div>

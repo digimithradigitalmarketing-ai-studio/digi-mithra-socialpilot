@@ -16,14 +16,14 @@ export const Button = forwardRef<
       ref={ref}
       disabled={disabled || loading}
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:opacity-50",
+        "inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:opacity-50",
         size === "sm" && "h-8 px-3 text-xs",
         size === "md" && "h-10 px-4 text-sm",
         size === "icon" && "size-9",
-        variant === "primary" && "bg-brand text-black hover:bg-brand-2",
-        variant === "secondary" && "border border-line-2 bg-panel-2 text-ink hover:border-brand/50",
+        variant === "primary" && "bg-brand text-on-brand shadow-sm shadow-brand/30 hover:bg-brand-deep dark:hover:bg-brand-2",
+        variant === "secondary" && "border border-line-2 bg-panel text-ink hover:border-brand/50 hover:text-brand-ink",
         variant === "ghost" && "text-muted hover:bg-panel-2 hover:text-ink",
-        variant === "danger" && "border border-red-500/40 bg-red-500/10 text-red-300 hover:bg-red-500/20",
+        variant === "danger" && "border border-danger/30 bg-danger/10 text-danger hover:bg-danger/20",
         className,
       )}
       {...props}
@@ -35,7 +35,7 @@ export const Button = forwardRef<
 });
 
 export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("rounded-2xl border border-line bg-panel", className)} {...props} />;
+  return <div className={cn("shadow-soft rounded-2xl border border-line bg-panel", className)} {...props} />;
 }
 
 export function CardHeader({ title, description, action }: { title: React.ReactNode; description?: React.ReactNode; action?: React.ReactNode }) {
@@ -51,11 +51,13 @@ export function CardHeader({ title, description, action }: { title: React.ReactN
 }
 
 export function PageHeader({ title, description, actions }: { title: string; description?: string; actions?: React.ReactNode }) {
+  // the app header already shows the page title, so it is kept for screen readers only
+  if (!description && !actions) return <h2 className="sr-only">{title}</h2>;
   return (
-    <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 className="text-xl font-bold tracking-tight sm:text-2xl">{title}</h1>
-        {description && <p className="mt-1 text-sm text-muted">{description}</p>}
+        <h2 className="sr-only">{title}</h2>
+        {description && <p className="text-sm text-muted">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
     </div>
@@ -63,7 +65,7 @@ export function PageHeader({ title, description, actions }: { title: string; des
 }
 
 const fieldCls =
-  "w-full rounded-lg border border-line-2 bg-bg px-3 text-sm text-ink placeholder:text-faint focus:border-brand focus:outline-none disabled:opacity-60";
+  "w-full rounded-xl border border-line-2 bg-panel px-3 text-sm text-ink placeholder:text-faint focus:border-brand focus:outline-none disabled:opacity-60";
 
 export const Input = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(function Input(
   { className, ...props },
@@ -104,12 +106,12 @@ export function Field({ label, hint, children, className }: { label: string; hin
 }
 
 const badgeTones = {
-  gray: "bg-white/5 text-muted border-line-2",
-  green: "bg-brand/10 text-brand border-brand/30",
-  yellow: "bg-amber-400/10 text-amber-300 border-amber-400/30",
-  red: "bg-red-500/10 text-red-300 border-red-500/30",
-  blue: "bg-sky-400/10 text-sky-300 border-sky-400/30",
-  purple: "bg-violet-400/10 text-violet-300 border-violet-400/30",
+  gray: "bg-ink/5 text-muted border-line-2",
+  green: "bg-brand/10 text-brand-ink border-brand/30",
+  yellow: "bg-warn/10 text-warn border-warn/30",
+  red: "bg-danger/10 text-danger border-danger/30",
+  blue: "bg-info/10 text-info border-info/30",
+  purple: "bg-purple/10 text-purple border-purple/30",
 } as const;
 export type Tone = keyof typeof badgeTones;
 
@@ -142,7 +144,7 @@ export function StatusBadge({ status }: { status: string }) {
 }
 
 export function Spinner({ className }: { className?: string }) {
-  return <Loader2 className={cn("size-5 animate-spin text-brand", className)} />;
+  return <Loader2 className={cn("size-5 animate-spin text-brand-ink", className)} />;
 }
 
 export function LoadingBlock({ label = "Loading…" }: { label?: string }) {
@@ -168,7 +170,7 @@ export function EmptyState({
     <div className="flex flex-col items-center justify-center px-6 py-14 text-center">
       {Icon && (
         <div className="mb-3 grid size-12 place-items-center rounded-2xl border border-line-2 bg-panel-2">
-          <Icon className="size-6 text-brand" />
+          <Icon className="size-6 text-brand-ink" />
         </div>
       )}
       <p className="font-semibold">{title}</p>
@@ -199,10 +201,10 @@ export function StatCard({
           <Icon
             className={cn(
               "size-4",
-              tone === "brand" && "text-brand",
-              tone === "warn" && "text-amber-300",
-              tone === "danger" && "text-red-400",
-              tone === "info" && "text-sky-300",
+              tone === "brand" && "text-brand-ink",
+              tone === "warn" && "text-warn",
+              tone === "danger" && "text-danger",
+              tone === "info" && "text-info",
             )}
           />
         )}
@@ -236,14 +238,14 @@ export function Modal({
   }, [open, onClose]);
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center sm:p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-900/40 backdrop-blur-sm dark:bg-black/70 sm:items-center sm:p-4" onClick={onClose}>
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          "animate-fade-up flex max-h-[92dvh] w-full flex-col rounded-t-2xl border border-line-2 bg-panel shadow-2xl sm:rounded-2xl",
+          "animate-fade-up flex max-h-[92dvh] w-full flex-col rounded-t-3xl border border-line bg-panel shadow-2xl sm:rounded-3xl",
           wide ? "sm:max-w-3xl" : "sm:max-w-lg",
         )}
       >
@@ -270,14 +272,14 @@ export function Tabs<T extends string>({
   tabs: { value: T; label: React.ReactNode }[];
 }) {
   return (
-    <div className="mb-4 flex gap-1 overflow-x-auto rounded-xl border border-line bg-panel p-1">
+    <div className="shadow-soft mb-4 flex gap-1 overflow-x-auto rounded-2xl border border-line bg-panel p-1">
       {tabs.map((t) => (
         <button
           key={t.value}
           onClick={() => onChange(t.value)}
           className={cn(
             "whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
-            value === t.value ? "bg-brand text-black" : "text-muted hover:text-ink",
+            value === t.value ? "bg-brand/10 text-brand-ink dark:bg-brand dark:text-on-brand" : "text-muted hover:text-ink",
           )}
         >
           {t.label}
@@ -339,7 +341,7 @@ export function ProgressBar({ value, max, className }: { value: number; max: num
   return (
     <div className={cn("h-2 w-full overflow-hidden rounded-full bg-line", className)}>
       <div
-        className={cn("h-full rounded-full", pct >= 90 ? "bg-red-400" : pct >= 70 ? "bg-amber-300" : "bg-brand")}
+        className={cn("h-full rounded-full", pct >= 90 ? "bg-danger" : pct >= 70 ? "bg-warn" : "bg-brand")}
         style={{ width: `${pct}%` }}
       />
     </div>

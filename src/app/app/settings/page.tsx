@@ -8,6 +8,7 @@ import { useApp } from "@/components/app-context";
 import { useToast } from "@/components/toast";
 import { Badge, Button, Card, CardHeader, EmptyState, Field, Input, LoadingBlock, Modal, PageHeader, Select, Tabs } from "@/components/ui";
 import { downloadFile, errMsg, formatDate, timeAgo } from "@/lib/utils";
+import { ROLE_DESCRIPTIONS, roleLabel } from "@/lib/roles";
 import type { TenantRole } from "@/lib/types";
 
 type Tab = "profile" | "org" | "api" | "webhooks" | "audit" | "data";
@@ -193,17 +194,17 @@ function OrgTab() {
                   {isOwner && m.role !== "owner" ? (
                     <Select className="h-8 w-36 text-xs" value={m.role} onChange={(e) => changeRole(m, e.target.value)}>
                       {ASSIGNABLE.map((r) => (
-                        <option key={r} value={r}>
-                          {r}
+                        <option key={r} value={r} title={ROLE_DESCRIPTIONS[r]}>
+                          {roleLabel(r)}
                         </option>
                       ))}
                     </Select>
                   ) : (
-                    <Badge tone={m.role === "owner" ? "green" : "gray"}>{m.role}</Badge>
+                    <Badge tone={m.role === "owner" ? "green" : "gray"}>{roleLabel(m.role)}</Badge>
                   )}
                   {isAdmin && m.role !== "owner" && m.user_id !== user.id && (
                     <Button size="icon" variant="ghost" aria-label="Remove member" onClick={() => removeMember(m)}>
-                      <Trash2 className="size-4 text-red-300" />
+                      <Trash2 className="size-4 text-danger" />
                     </Button>
                   )}
                 </div>
@@ -304,7 +305,7 @@ function ApiKeysTab() {
         </ul>
       )}
       <Modal open={!!newKey} onClose={() => setNewKey(null)} title="Your new API key" footer={<Button onClick={() => setNewKey(null)}>Done</Button>}>
-        <p className="mb-3 text-sm text-amber-200">Copy this key now. For security it will never be shown again.</p>
+        <p className="mb-3 text-sm text-warn">Copy this key now. For security it will never be shown again.</p>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <code className="min-w-0 flex-1 break-all rounded-lg border border-line bg-bg p-3 font-mono text-xs">{newKey}</code>
           {newKey && <CopyInline text={newKey} />}
@@ -405,7 +406,7 @@ function WebhooksTab() {
                   Edit
                 </Button>
                 <Button size="icon" variant="ghost" aria-label="Delete webhook" onClick={() => remove(h)}>
-                  <Trash2 className="size-4 text-red-300" />
+                  <Trash2 className="size-4 text-danger" />
                 </Button>
               </div>
             </li>
@@ -525,7 +526,7 @@ function AuditTab() {
                 <span className="text-muted">{r.entity.replace(/_/g, " ")}</span>
                 {r.meta?.name && <span> · {r.meta.name}</span>}
                 {r.meta?.status && <span className="text-faint"> · {r.meta.status}</span>}
-                {r.meta?.role && <span className="text-faint"> · {r.meta.role}</span>}
+                {r.meta?.role && <span className="text-faint"> · {roleLabel(r.meta.role)}</span>}
               </span>
               <span className="text-xs text-faint">
                 {r.actor_id ? actors[r.actor_id] ?? r.actor_id.slice(0, 8) : "system"} · {formatDate(r.created_at)}
@@ -592,8 +593,8 @@ function DataTab() {
         </div>
       </Card>
       {can("owner") && (
-        <Card className="border-red-500/30">
-          <CardHeader title={<span className="flex items-center gap-2 text-red-300"><AlertTriangle className="size-4" /> Danger zone</span>} description="Permanently delete this organization, all workspaces and all data. This cannot be undone." />
+        <Card className="border-danger/30">
+          <CardHeader title={<span className="flex items-center gap-2 text-danger"><AlertTriangle className="size-4" /> Danger zone</span>} description="Permanently delete this organization, all workspaces and all data. This cannot be undone." />
           <div className="space-y-3 p-4 sm:p-5">
             <Field label={`Type "${tenant.name}" to confirm`}>
               <Input value={confirmName} onChange={(e) => setConfirmName(e.target.value)} />

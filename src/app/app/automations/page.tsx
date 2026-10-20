@@ -523,7 +523,7 @@ function Builder({ initial, onClose, onSaved }: { initial: Partial<Workflow>; on
         {/* visual flow */}
         <div>
           <div className="flex items-center gap-3 rounded-xl border border-brand/40 bg-brand/5 px-3 py-2.5">
-            <span className="grid size-8 place-items-center rounded-lg bg-brand text-black">
+            <span className="grid size-8 place-items-center rounded-lg bg-brand text-on-brand">
               <Zap className="size-4" />
             </span>
             <div>
@@ -539,7 +539,7 @@ function Builder({ initial, onClose, onSaved }: { initial: Partial<Workflow>; on
                 <div className="ml-7 h-5 w-px bg-line-2" />
                 <div className="rounded-xl border border-line-2 bg-panel-2 p-3">
                   <div className="mb-2 flex items-center gap-2">
-                    <span className="grid size-7 place-items-center rounded-lg text-black" style={{ background: meta.color }}>
+                    <span className="grid size-7 place-items-center rounded-lg text-white" style={{ background: meta.color }}>
                       <Icon className="size-3.5" />
                     </span>
                     <p className="flex-1 text-sm font-medium">
@@ -556,7 +556,7 @@ function Builder({ initial, onClose, onSaved }: { initial: Partial<Workflow>; on
                     >
                       <ArrowDown className="size-4" />
                     </button>
-                    <button aria-label="Remove step" onClick={() => setNodes((ns) => ns.filter((_, j) => j !== i))} className="rounded p-1 text-muted hover:text-red-300">
+                    <button aria-label="Remove step" onClick={() => setNodes((ns) => ns.filter((_, j) => j !== i))} className="rounded p-1 text-muted hover:text-danger">
                       <Trash2 className="size-4" />
                     </button>
                   </div>
@@ -635,7 +635,7 @@ function TestModal({ workflow, onClose }: { workflow: Workflow; onClose: () => v
         </>
       }
     >
-      <p className="mb-3 rounded-lg border border-amber-400/30 bg-amber-400/10 p-3 text-xs text-amber-200">
+      <p className="mb-3 rounded-lg border border-warn/30 bg-warn/10 p-3 text-xs text-warn">
         Test runs execute real actions (leads, tags, notifications) in this workspace using the sample data below. Contact-based
         actions are skipped because no real contact is attached.
       </p>
@@ -661,7 +661,7 @@ function TestModal({ workflow, onClose }: { workflow: Workflow; onClose: () => v
           <div className="mb-2 flex items-center gap-2">
             <p className="text-sm font-semibold">Result</p>
             <Badge tone={RUN_TONE[run.status]}>{run.status.replace("_", " ")}</Badge>
-            {run.error && <span className="text-xs text-red-300">{run.error}</span>}
+            {run.error && <span className="text-xs text-danger">{run.error}</span>}
           </div>
           <StepList steps={steps} />
         </div>
@@ -754,7 +754,7 @@ function RunLog({ runs, wfName, onChanged }: { runs: Run[]; wfName: (id: string)
               </button>
               {open === r.id && (
                 <div className={cn("space-y-3 px-4 pb-4")}>
-                  {r.error && <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-300">{r.error}</p>}
+                  {r.error && <p className="rounded-lg border border-danger/30 bg-danger/10 px-3 py-2 text-xs text-danger">{r.error}</p>}
                   {typeof r.trigger_payload?.body === "string" && (
                     <p className="text-xs text-muted">
                       Trigger message: <span className="text-ink">“{r.trigger_payload.body}”</span>
@@ -801,7 +801,7 @@ function VersionsModal({ workflow, onClose }: { workflow: Workflow; onClose: () 
             <li key={v.id} className="rounded-xl border border-line p-3">
               <div className="flex items-center gap-2">
                 <Badge tone={v.version === workflow.version ? "green" : "gray"}>v{v.version}</Badge>
-                {v.version === workflow.version && <span className="text-xs text-brand">current</span>}
+                {v.version === workflow.version && <span className="text-xs text-brand-ink">current</span>}
                 <span className="ml-auto text-xs text-faint">{formatDate(v.created_at)}</span>
               </div>
               <div className="mt-2 flex flex-wrap gap-1">

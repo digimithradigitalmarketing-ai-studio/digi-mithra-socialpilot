@@ -52,6 +52,7 @@ interface Consent {
 }
 
 const PRIORITY_TONE = { low: "gray", normal: "blue", high: "yellow", urgent: "red" } as const;
+const LIVE_CHANNELS = ["instagram", "facebook", "whatsapp"];
 
 function quickKey(ws: string) {
   return `sp.quickreplies.${ws}`;
@@ -154,8 +155,8 @@ function Inbox() {
     <div className="flex flex-col">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold tracking-tight sm:text-2xl">Unified inbox</h1>
-          <p className="mt-1 text-sm text-muted">
+          <h2 className="sr-only">Unified inbox</h2>
+          <p className="text-sm text-muted">
             {totalUnread > 0 ? `${totalUnread} unread message${totalUnread === 1 ? "" : "s"}` : "All caught up"} across channels
           </p>
         </div>
@@ -232,7 +233,7 @@ function Inbox() {
                     </span>
                   </span>
                   {c.unread_count > 0 && (
-                    <span className="mt-1 grid h-5 min-w-5 place-items-center rounded-full bg-brand px-1 text-[10px] font-bold text-black">
+                    <span className="mt-1 grid h-5 min-w-5 place-items-center rounded-full bg-brand px-1 text-[10px] font-bold text-on-brand">
                       {c.unread_count}
                     </span>
                   )}
@@ -352,13 +353,31 @@ function Thread({ conv, onBack, onChanged }: { conv: Conversation; onBack: () =>
         if (error) throw error;
         toast("Note added");
       } else {
-        const { error } = await supabase.rpc("send_reply", {
+        const { data: messageId, error } = await supabase.rpc("send_reply", {
           p_conversation: conv.id,
           p_body: body.trim(),
           p_draft: draftId ?? null,
         });
         if (error) throw error;
-        toast(conv.is_demo ? "Reply recorded (demo conversation — not sent to a real channel)" : "Reply sent");
+        if (!conv.is_demo && LIVE_CHANNELS.includes(conv.channel) && messageId) {
+          // deliver through the official provider API; the reply stays recorded even if delivery fails
+          const res = await fetch("/api/messages/deliver", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ messageId }),
+          });
+          const json = (await res.json().catch(() => ({}))) as { delivered?: boolean; reason?: string; error?: string };
+          if (!res.ok || json.error) toast(`Saved, but not delivered: ${json.error ?? "provider error"}`, "error");
+          else toast(json.delivered ? "Reply delivered" : `Reply saved (${json.reason ?? "not delivered"})`, json.delivered ? "success" : "info");
+        } else {
+          toast(
+            conv.is_demo
+              ? "Reply recorded (demo conversation — not sent to a real channel)"
+              : conv.channel === "website"
+                ? "Reply sent to the website chat"
+                : "Reply recorded",
+          );
+        }
       }
       setText("");
       setEditingDraft(null);
@@ -429,6 +448,8 @@ function Thread({ conv, onBack, onChanged }: { conv: Conversation; onBack: () =>
   const lastInboundAt = [...messages].reverse().find((m) => m.direction === "inbound")?.created_at;
   const waWindowOpen =
     conv.channel !== "whatsapp" || (lastInboundAt ? Date.now() - new Date(lastInboundAt).getTime() < 24 * 3600 * 1000 : false);
+  const metaWindowOpen = lastInboundAt ? Date.now() - new Date(lastInboundAt).getTime() < 24 * 3600 * 1000 : false;
+  const handling = ((conv as Conversation & { handling?: string }).handling ?? "human") as "ai_assist" | "human";
 
   return (
     <>
@@ -468,6 +489,17 @@ function Thread({ conv, onBack, onChanged }: { conv: Conversation; onBack: () =>
                 <option value="high">High</option>
                 <option value="urgent">Urgent</option>
               </Select>
+              <div role="group" aria-label="Handling" className="flex rounded-lg border border-line-2 p-0.5 text-[11px]">
+                {(["ai_assist", "human"] as const).map((h) => (
+                  <button
+                    key={h}
+                    onClick={() => handling !== h && updateConv({ handling: h } as Partial<Conversation>)}
+                    className={cn("rounded-md px-2 py-1 font-medium", handling === h ? "bg-brand text-on-brand" : "text-muted hover:text-ink")}
+                  >
+                    {h === "ai_assist" ? "AI assist" : "Human"}
+                  </button>
+                ))}
+              </div>
               {conv.assigned_to !== user.id && (
                 <Button size="sm" variant="ghost" onClick={() => updateConv({ assigned_to: user.id })} title="Assign to me">
                   <UserCheck className="size-4" />
@@ -478,11 +510,25 @@ function Thread({ conv, onBack, onChanged }: { conv: Conversation; onBack: () =>
           )}
         </div>
 
+        <div className="flex items-center gap-2 border-b border-line bg-panel-2 px-3 py-1.5 text-[11px] text-muted">
+          <Bot className="size-3.5 shrink-0" />
+          {handling === "ai_assist"
+            ? "AI assist: automations may draft replies from approved brand knowledge. Every draft still needs a human to send it."
+            : "Human handling: a team member owns this conversation. AI only suggests replies when you ask."}
+        </div>
+
+        {(conv.channel === "instagram" || conv.channel === "facebook") && !conv.is_demo && !metaWindowOpen && (
+          <div className="flex items-center gap-2 border-b border-warn/30 bg-warn/10 px-3 py-2 text-xs text-warn">
+            <Clock className="size-3.5 shrink-0" />
+            The 24-hour messaging window has closed. Replies outside it need an approved message tag per Meta policy.
+          </div>
+        )}
+
         {conv.channel === "whatsapp" && (
           <div
             className={cn(
               "flex items-center gap-2 border-b px-3 py-2 text-xs",
-              waWindowOpen ? "border-line bg-brand/5 text-muted" : "border-amber-400/30 bg-amber-400/10 text-amber-200",
+              waWindowOpen ? "border-line bg-brand/5 text-muted" : "border-warn/30 bg-warn/10 text-warn",
             )}
           >
             <Clock className="size-3.5 shrink-0" />
@@ -503,7 +549,7 @@ function Thread({ conv, onBack, onChanged }: { conv: Conversation; onBack: () =>
               if (m.is_ai_draft) {
                 return (
                   <div key={m.id} className="ml-auto max-w-[85%] rounded-2xl border border-dashed border-brand/60 bg-brand/5 p-3">
-                    <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-brand">
+                    <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-brand-ink">
                       <Bot className="size-3.5" /> AI draft — review before sending
                     </p>
                     <p className="text-sm whitespace-pre-wrap">{m.body}</p>
@@ -533,8 +579,8 @@ function Thread({ conv, onBack, onChanged }: { conv: Conversation; onBack: () =>
               }
               if (m.direction === "note") {
                 return (
-                  <div key={m.id} className="mx-auto max-w-[90%] rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-sm text-amber-100">
-                    <p className="mb-0.5 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-amber-300">
+                  <div key={m.id} className="mx-auto max-w-[90%] rounded-xl border border-warn/30 bg-warn/10 px-3 py-2 text-sm text-warn">
+                    <p className="mb-0.5 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-warn">
                       <StickyNote className="size-3" /> Internal note · {m.sender_name ?? "Team"}
                     </p>
                     <p className="whitespace-pre-wrap">{m.body}</p>
@@ -547,11 +593,11 @@ function Thread({ conv, onBack, onChanged }: { conv: Conversation; onBack: () =>
                   <div
                     className={cn(
                       "max-w-[85%] rounded-2xl px-3.5 py-2 text-sm",
-                      out ? "rounded-br-sm bg-brand text-black" : "rounded-bl-sm border border-line-2 bg-panel-2",
+                      out ? "rounded-br-sm bg-brand text-on-brand" : "rounded-bl-sm border border-line-2 bg-panel-2",
                     )}
                   >
                     <p className="whitespace-pre-wrap">{m.body}</p>
-                    <p className={cn("mt-1 text-[10px]", out ? "text-black/60" : "text-faint")}>
+                    <p className={cn("mt-1 text-[10px]", out ? "text-on-brand/70" : "text-faint")}>
                       {m.sender_name ? `${m.sender_name} · ` : ""}
                       {formatDate(m.created_at)}
                     </p>
@@ -569,13 +615,13 @@ function Thread({ conv, onBack, onChanged }: { conv: Conversation; onBack: () =>
             <div className="mb-2 flex flex-wrap items-center gap-1.5">
               <button
                 onClick={() => setMode("reply")}
-                className={cn("rounded-md px-2.5 py-1 text-xs font-medium", mode === "reply" ? "bg-brand text-black" : "text-muted hover:text-ink")}
+                className={cn("rounded-md px-2.5 py-1 text-xs font-medium", mode === "reply" ? "bg-brand text-on-brand" : "text-muted hover:text-ink")}
               >
                 Reply
               </button>
               <button
                 onClick={() => setMode("note")}
-                className={cn("rounded-md px-2.5 py-1 text-xs font-medium", mode === "note" ? "bg-amber-300 text-black" : "text-muted hover:text-ink")}
+                className={cn("rounded-md px-2.5 py-1 text-xs font-medium", mode === "note" ? "bg-warn text-white" : "text-muted hover:text-ink")}
               >
                 Internal note
               </button>
@@ -598,12 +644,12 @@ function Thread({ conv, onBack, onChanged }: { conv: Conversation; onBack: () =>
                         >
                           {qr}
                         </button>
-                        <button aria-label="Remove" onClick={() => removeQuick(qr)} className="p-1.5 text-faint opacity-0 group-hover:opacity-100 hover:text-red-300">
+                        <button aria-label="Remove" onClick={() => removeQuick(qr)} className="p-1.5 text-faint opacity-0 group-hover:opacity-100 hover:text-danger">
                           <Trash2 className="size-3" />
                         </button>
                       </div>
                     ))}
-                    <button onClick={saveQuick} disabled={!text.trim()} className="mt-1 w-full rounded-lg border-t border-line px-2 py-1.5 text-left text-xs text-brand disabled:opacity-40">
+                    <button onClick={saveQuick} disabled={!text.trim()} className="mt-1 w-full rounded-lg border-t border-line px-2 py-1.5 text-left text-xs text-brand-ink disabled:opacity-40">
                       + Save current text as quick reply
                     </button>
                   </div>
@@ -614,7 +660,7 @@ function Thread({ conv, onBack, onChanged }: { conv: Conversation; onBack: () =>
               </Button>
             </div>
             {editingDraft && (
-              <p className="mb-1.5 text-[11px] text-brand">
+              <p className="mb-1.5 text-[11px] text-brand-ink">
                 Editing AI draft —{" "}
                 <button
                   className="underline"
@@ -635,7 +681,7 @@ function Thread({ conv, onBack, onChanged }: { conv: Conversation; onBack: () =>
                   if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) send(text, editingDraft ?? undefined);
                 }}
                 placeholder={mode === "note" ? "Add a private note for your team…" : "Type a reply…  (Ctrl+Enter to send)"}
-                className={cn("max-h-40 min-h-11 flex-1 resize-none", mode === "note" && "border-amber-400/40")}
+                className={cn("max-h-40 min-h-11 flex-1 resize-none", mode === "note" && "border-warn/30")}
                 rows={2}
               />
               <Button
@@ -734,7 +780,7 @@ function ContactPanel({ conv }: { conv: Conversation }) {
   return (
     <aside className="hidden min-h-0 flex-col overflow-y-auto xl:flex">
       <div className="border-b border-line p-4 text-center">
-        <div className="mx-auto grid size-14 place-items-center rounded-full bg-gradient-to-br from-brand to-brand-deep text-xl font-bold text-black">
+        <div className="mx-auto grid size-14 place-items-center rounded-full bg-gradient-to-br from-brand to-brand-deep text-xl font-bold text-on-brand">
           {(contact?.name ?? "?").slice(0, 1).toUpperCase()}
         </div>
         <p className="mt-2 font-semibold">{contact?.name ?? "Unknown contact"}</p>
@@ -801,7 +847,7 @@ function ContactPanel({ conv }: { conv: Conversation }) {
             <ul className="space-y-1.5">
               {leads.map((l) => (
                 <li key={l.id} className="flex items-center justify-between gap-2 rounded-lg bg-panel-2 px-2.5 py-1.5">
-                  <a href="/app/crm" className="truncate text-xs hover:text-brand">
+                  <a href="/app/crm" className="truncate text-xs hover:text-brand-ink">
                     {l.title}
                   </a>
                   <span className="shrink-0 text-[11px] text-muted">{formatINR(l.value_inr)}</span>
@@ -879,7 +925,7 @@ function SimulateModal({ open, onClose, onDone }: { open: boolean; onClose: () =
       }
     >
       <div className="space-y-3">
-        <p className="rounded-lg border border-amber-400/30 bg-amber-400/10 p-3 text-xs text-amber-200">
+        <p className="rounded-lg border border-warn/30 bg-warn/10 p-3 text-xs text-warn">
           Test tool: use this while no live provider webhook is connected. It creates a demo conversation and triggers your
           active “message received” automations exactly like a real message would.
         </p>

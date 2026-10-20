@@ -1,7 +1,7 @@
 export type TenantRole = "owner" | "admin" | "manager" | "editor" | "support" | "analyst" | "viewer" | "approver";
 export type WsRole = "admin" | "manager" | "editor" | "support" | "analyst" | "viewer" | "approver";
 
-export type Provider = "instagram" | "facebook" | "whatsapp" | "google_business" | "youtube" | "linkedin" | "tiktok" | "x";
+export type Provider = "instagram" | "facebook" | "whatsapp" | "google_business" | "youtube" | "linkedin" | "tiktok" | "x" | "threads" | "gmail" | "website";
 
 export interface Plan {
   id: string;
@@ -214,5 +214,219 @@ export interface Notification {
   body: string | null;
   link: string | null;
   read_at: string | null;
+  created_at: string;
+}
+
+export interface BrandSettings {
+  niche?: string;
+  audience?: string;
+  tone?: string;
+  language?: string;
+  platforms?: string[];
+  frequency?: "1-3" | "4-5" | "6+";
+  goals?: string[];
+  offer?: string;
+  location?: string;
+  website?: string;
+  onboarded_at?: string;
+}
+
+export interface ContentSource {
+  id: string;
+  tenant_id: string;
+  workspace_id: string;
+  kind: "link" | "file" | "text" | "profile";
+  platform: string | null;
+  format: string | null;
+  url: string | null;
+  title: string | null;
+  description: string | null;
+  thumbnail_url: string | null;
+  text_content: string | null;
+  storage_path: string | null;
+  created_at: string;
+}
+
+export interface ContentIdea {
+  id: string;
+  tenant_id: string;
+  workspace_id: string;
+  title: string;
+  description: string | null;
+  angle: "Grow" | "Inspire" | "Sell" | "Value" | "Educate" | "Entertain";
+  origin: string;
+  format: string | null;
+  week_start: string;
+  used: boolean;
+  created_at: string;
+}
+
+export interface SavedItem {
+  id: string;
+  tenant_id: string;
+  workspace_id: string;
+  kind: "idea" | "hook" | "caption" | "script" | "post" | "source" | "chat" | "other";
+  title: string;
+  content: string;
+  meta: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface Competitor {
+  id: string;
+  tenant_id: string;
+  workspace_id: string;
+  name: string;
+  platform: string;
+  handle: string | null;
+  url: string | null;
+  followers: number | null;
+  posts_per_week: number | null;
+  avg_engagement_rate: number | null;
+  sample_posts: string | null;
+  notes: string | null;
+  analysis: string | null;
+  analyzed_at: string | null;
+  created_at: string;
+}
+
+export interface ChatThread {
+  id: string;
+  workspace_id: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  thread_id: string;
+  role: "user" | "assistant";
+  content: string;
+  created_at: string;
+}
+
+export interface Task {
+  id: string;
+  tenant_id: string;
+  workspace_id: string;
+  title: string;
+  description: string | null;
+  due_at: string | null;
+  priority: "low" | "normal" | "high" | "urgent";
+  status: "open" | "in_progress" | "done";
+  assigned_to: string | null;
+  lead_id: string | null;
+  contact_id: string | null;
+  created_by: string | null;
+  completed_at: string | null;
+  created_at: string;
+}
+
+export interface SegmentRules {
+  tags_any?: string[];
+  sources?: string[];
+  consent?: "any" | "opted_in";
+  has_email?: boolean;
+  created_within_days?: number;
+}
+
+export interface Segment {
+  id: string;
+  tenant_id: string;
+  workspace_id: string;
+  name: string;
+  description: string | null;
+  rules: SegmentRules;
+  created_at: string;
+}
+
+export interface FormField {
+  name: string;
+  label: string;
+  type: "text" | "email" | "tel" | "textarea" | "select" | "date";
+  required: boolean;
+  options?: string[];
+}
+
+export interface LandingPage {
+  id: string;
+  tenant_id: string;
+  workspace_id: string;
+  slug: string;
+  title: string;
+  headline: string;
+  subheadline: string | null;
+  body: string | null;
+  bullets: string[];
+  cta_label: string;
+  hero_image_url: string | null;
+  accent: string;
+  form_fields: FormField[];
+  success_message: string;
+  consent_text: string;
+  campaign_id: string | null;
+  status: "draft" | "published" | "archived";
+  views: number;
+  submissions: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface EmailCampaign {
+  id: string;
+  tenant_id: string;
+  workspace_id: string;
+  name: string;
+  subject: string;
+  preheader: string | null;
+  body: string;
+  segment_id: string | null;
+  from_name: string | null;
+  reply_to: string | null;
+  status: "draft" | "sending" | "sent" | "failed";
+  provider: string | null;
+  stats: { recipients?: number; sent?: number; simulated?: number; failed?: number; skipped?: number };
+  sent_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Appointment {
+  id: string;
+  tenant_id: string;
+  workspace_id: string;
+  title: string;
+  contact_id: string | null;
+  lead_id: string | null;
+  starts_at: string;
+  ends_at: string;
+  location: string | null;
+  kind: "visit" | "call" | "video" | "trial" | "consultation" | "event" | "other";
+  status: "scheduled" | "confirmed" | "completed" | "no_show" | "cancelled";
+  assigned_to: string | null;
+  notes: string | null;
+  follow_up_at: string | null;
+  created_at: string;
+}
+
+export interface SupportTicket {
+  id: string;
+  tenant_id: string;
+  subject: string;
+  category: "question" | "bug" | "billing" | "integration" | "feature" | "other";
+  priority: "low" | "normal" | "high" | "urgent";
+  status: "open" | "waiting_customer" | "waiting_support" | "resolved" | "closed";
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SupportMessage {
+  id: string;
+  ticket_id: string;
+  author_id: string | null;
+  from_support: boolean;
+  body: string;
   created_at: string;
 }

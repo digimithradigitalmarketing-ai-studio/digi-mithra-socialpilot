@@ -47,3 +47,29 @@ Live publishing needs credentials the browser must never see, so it belongs in a
 - [ ] Backups enabled and a restore tested
 - [ ] Privacy policy, terms and provider terms reviewed; GST registration
 - [ ] Error monitoring (e.g. Sentry) and uptime check on `/api/health`
+
+## 6. Going live at socialpilot.digimithra.co.in (Render + GoDaddy)
+
+Social Pilot is a **separate** Render service. Do not change the `@`, `www`, `app`, MX, TXT or DKIM records.
+
+1. Push this repo to GitHub (e.g. `digimithradigitalmarketing-ai-studio/digimithra-social-pilot`, private) and give Render's GitHub app access to it.
+2. Render → New → Blueprint (uses `render.yaml`) or New → Web Service with: runtime Node, build `npm ci && npm run build`, start `npm run start`, health check `/api/health`, region Singapore.
+3. Confirm the temporary `https://<service>.onrender.com` works.
+4. Render → Settings → Custom Domains → add `socialpilot.digimithra.co.in`.
+5. GoDaddy → DNS → Add New Record: Type `CNAME`, Name `socialpilot`, Value = your exact `<service>.onrender.com`, TTL default. Then click Verify in Render (HTTPS is issued automatically).
+
+### URLs to configure for the new domain
+
+| Where | Setting | Value |
+| --- | --- | --- |
+| Render env | `NEXT_PUBLIC_SITE_URL` | `https://socialpilot.digimithra.co.in` |
+| Supabase → Authentication → URL Configuration | Site URL | `https://socialpilot.digimithra.co.in` |
+| Supabase → Authentication → URL Configuration | Redirect URLs | `https://socialpilot.digimithra.co.in/auth/callback`, plus your `*.onrender.com/auth/callback` while testing |
+| Meta app → Facebook Login for Business → Valid OAuth Redirect URIs | | `https://socialpilot.digimithra.co.in/api/oauth/meta/callback` |
+| Meta app → Webhooks (Page, Instagram, WhatsApp Business Account) | Callback URL / Verify token | `https://socialpilot.digimithra.co.in/api/webhooks/meta` / your `META_WEBHOOK_VERIFY_TOKEN` |
+| Google Cloud OAuth client | Authorized redirect URI | Not used yet — Google Business Profile / Gmail OAuth will be added after Google approves API access |
+| Your website | Chat widget | `<script src="https://socialpilot.digimithra.co.in/widget.js" data-key="…" async></script>` (copy from Connections → Website chat) |
+
+Changing the Site URL in Supabase only affects this Supabase project (`siyxkombexmowlggxlrb`), which belongs to Social Pilot alone; the existing app's settings are untouched.
+
+Note: `NEXT_PUBLIC_*` values are baked in at build time — after changing them on Render, trigger a new deploy.

@@ -1,0 +1,43 @@
+# Render Blueprint for Digi Mithra Social Pilot (separate from the existing app at app.digimithra.co.in)
+services:
+  - type: web
+    name: digimithra-social-pilot
+    runtime: node
+    plan: free            # upgrade to "starter" to avoid sleeping after 15 min idle
+    region: singapore
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    domains:
+      - socialpilot.digimithra.co.in
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NEXT_PUBLIC_SITE_URL
+        value: https://socialpilot.digimithra.co.in
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        value: https://siyxkombexmowlggxlrb.supabase.co
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        value: sb_publishable_tIV1Pxs7B2nM8Dqg_oTq3Q_NIb9lpUl
+      # secrets: set in the Render dashboard, never commit values
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: TOKEN_ENCRYPTION_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: META_APP_ID
+        sync: false
+      - key: META_APP_SECRET
+        sync: false
+      - key: META_WEBHOOK_VERIFY_TOKEN
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: NEXT_PUBLIC_SALES_EMAIL
+        sync: false
