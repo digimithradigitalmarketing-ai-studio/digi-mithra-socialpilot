@@ -1,102 +1,136 @@
 import Image from "next/image";
+import Link from "next/link";
+import {
+  BarChart3,
+  BookOpen,
+  CalendarDays,
+  Check,
+  Inbox,
+  ListChecks,
+  ShieldCheck,
+  Smartphone,
+  Sparkles,
+  Users,
+  Workflow,
+  Zap,
+} from "lucide-react";
 
-export default function Home() {
+const FEATURES = [
+  { icon: CalendarDays, title: "Plan & publish", text: "Composer, calendar and scheduled publishing for every connected channel." },
+  { icon: ListChecks, title: "Approvals", text: "Client and manager approvals before anything goes live." },
+  { icon: Inbox, title: "Unified inbox", text: "Messages from Instagram, Facebook and WhatsApp in one place, in real time." },
+  { icon: Sparkles, title: "Brand-aware AI", text: "Captions, hooks, replies and campaign copy grounded in your business facts." },
+  { icon: Workflow, title: "Automations", text: "Turn enquiries into leads, tag contacts, notify staff and draft replies automatically." },
+  { icon: Users, title: "CRM & leads", text: "Drag-and-drop pipeline for memberships, events and bookings." },
+  { icon: BarChart3, title: "Analytics", text: "Publishing, engagement and lead reports with CSV exports." },
+  { icon: BookOpen, title: "Brand knowledge", text: "Hours, offerings, tone and forbidden claims the AI must respect." },
+  { icon: ShieldCheck, title: "Secure multi-tenant", text: "Row-level security keeps every business's data isolated." },
+];
+
+const PLANS = [
+  { name: "Starter", price: "₹999", items: ["1 workspace", "3 social accounts", "100 posts / month", "1 user", "100 AI credits"] },
+  { name: "Growth", price: "₹2,999", items: ["3 workspaces", "10 social accounts", "500 posts / month", "5 users", "500 AI credits"], featured: true },
+  { name: "Agency", price: "₹7,999", items: ["15 workspaces", "50 social accounts", "2,000 posts / month", "20 users", "2,000 AI credits"] },
+  { name: "Enterprise", price: "Custom", items: ["Custom limits", "SLA & SSO", "Dedicated support", "Custom AI allowance"] },
+];
+
+export default function Landing() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="brand-glow min-h-dvh">
+      <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+        <Link href="/" className="flex items-center gap-2.5">
+          <Image src="/mark.png" alt="" width={36} height={36} className="rounded-lg" />
+          <span className="text-sm font-bold">
+            Digi <span className="text-gradient italic">Mithra</span>
+            <span className="ml-1.5 hidden text-[10px] font-semibold tracking-[0.2em] text-muted sm:inline">SOCIAL PILOT</span>
+          </span>
+        </Link>
+        <nav className="flex items-center gap-2">
+          <Link href="/login" className="rounded-lg px-3 py-2 text-sm text-muted hover:text-ink">
+            Sign in
+          </Link>
+          <Link href="/signup" className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-black hover:bg-brand-2">
+            Start free trial
+          </Link>
+        </nav>
+      </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 pt-8 pb-16 sm:px-6 md:grid-cols-2 md:pt-16">
+        <div>
+          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-medium text-brand">
+            <Zap className="size-3.5" /> All-in-one automation · In one place
+          </p>
+          <h1 className="text-4xl leading-tight font-extrabold tracking-tight sm:text-5xl">
+            Your <span className="text-gradient">digital growth</span> partner for social media.
+          </h1>
+          <p className="mt-4 max-w-lg text-base text-muted">
+            Plan, publish, reply, automate and convert — for your own business or every client you manage. Built for fitness studios,
+            production houses, agencies and local brands.
+          </p>
+          <div className="mt-7 flex flex-wrap gap-3">
+            <Link href="/signup" className="rounded-xl bg-brand px-5 py-3 text-sm font-semibold text-black hover:bg-brand-2">
+              Start 14-day free trial
+            </Link>
+            <Link href="/login" className="rounded-xl border border-line-2 px-5 py-3 text-sm font-semibold hover:border-brand/50">
+              Sign in
+            </Link>
+          </div>
+          <p className="mt-4 flex items-center gap-2 text-xs text-faint">
+            <Smartphone className="size-4" /> Works on desktop and mobile — install it on your phone like an app.
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <div className="relative mx-auto w-full max-w-md">
+          <div className="absolute inset-0 -z-10 rounded-[2rem] bg-brand/20 blur-3xl" />
           <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+            src="/brand-logo.webp"
+            alt="Digi Mithra Social Pilot — all in one automation in one place"
+            width={800}
+            height={800}
+            priority
+            className="rounded-[2rem] border border-line-2"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+        <h2 className="mb-6 text-center text-2xl font-bold">Everything your social team needs</h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {FEATURES.map((f) => (
+            <div key={f.title} className="rounded-2xl border border-line bg-panel p-5">
+              <f.icon className="size-6 text-brand" />
+              <h3 className="mt-3 font-semibold">{f.title}</h3>
+              <p className="mt-1 text-sm text-muted">{f.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6" id="pricing">
+        <h2 className="text-center text-2xl font-bold">Simple monthly plans</h2>
+        <p className="mt-1 mb-6 text-center text-sm text-muted">Prices per month, excluding GST and channel charges.</p>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {PLANS.map((p) => (
+            <div key={p.name} className={`rounded-2xl border p-5 ${p.featured ? "border-brand bg-brand/5" : "border-line bg-panel"}`}>
+              <p className="font-semibold">{p.name}</p>
+              <p className="mt-2 text-3xl font-extrabold">
+                {p.price}
+                {p.price !== "Custom" && <span className="text-sm font-normal text-muted">/mo</span>}
+              </p>
+              <ul className="mt-4 space-y-2 text-sm">
+                {p.items.map((i) => (
+                  <li key={i} className="flex gap-2 text-muted">
+                    <Check className="mt-0.5 size-4 shrink-0 text-brand" /> {i}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <footer className="border-t border-line py-6 text-center text-xs tracking-wider text-faint">
+        BUILT ON <span className="text-brand">TRUST</span> · DRIVEN BY <span className="text-brand">GROWTH</span> · FOCUSED ON YOUR{" "}
+        <span className="text-brand">SUCCESS</span>
       </footer>
     </div>
   );

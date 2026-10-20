@@ -1,26 +1,70 @@
 @import "tailwindcss";
 
+@theme {
+  --color-bg: #050805;
+  --color-panel: #0b110b;
+  --color-panel-2: #111a11;
+  --color-line: #1d2a1d;
+  --color-line-2: #2a3a2a;
+  --color-ink: #f4f7f2;
+  --color-muted: #9aa894;
+  --color-faint: #66735f;
+  --color-brand: #8bdc2b;
+  --color-brand-2: #b6f04a;
+  --color-brand-deep: #4d9a12;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-brand) 40%, transparent);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-2) transparent;
+}
+
+.brand-glow {
+  background:
+    radial-gradient(60% 50% at 50% 0%, color-mix(in oklab, var(--color-brand) 18%, transparent), transparent 70%),
+    var(--color-bg);
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, var(--color-brand-2), var(--color-brand));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.animate-fade-up {
+  animation: fade-up 0.2s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up { animation: none; }
 }
