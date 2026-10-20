@@ -42,6 +42,7 @@ import {
   Settings,
   Star,
   Swords,
+  UserRound,
   Users,
   Volume2,
   Workflow as WorkflowIcon,
@@ -50,7 +51,9 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { useApp } from "@/components/app-context";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { cn, timeAgo } from "@/lib/utils";
+import { cn, formatDate, timeAgo } from "@/lib/utils";
+import { roleLabel } from "@/lib/roles";
+import { Avatar } from "@/components/avatar";
 import type { Notification } from "@/lib/types";
 
 type NavItem = { href: string; label: string; icon: React.ComponentType<{ className?: string }> };
@@ -113,7 +116,7 @@ const NAV: { section: string | null; items: NavItem[] }[] = [
   },
 ];
 const ALL_ITEMS = NAV.flatMap((s) => s.items);
-const EXTRA_TITLES: Record<string, string> = { "/app/ai": "AI studio", "/app/knowledge": "Brand knowledge", "/app/admin": "Super admin" };
+const EXTRA_TITLES: Record<string, string> = { "/app/ai": "AI studio", "/app/knowledge": "Brand knowledge", "/app/admin": "Super admin", "/app/profile": "My profile" };
 
 const MOBILE_TABS: NavItem[] = [
   { href: "/app", label: "Home", icon: LayoutGrid },
@@ -404,7 +407,7 @@ function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void 
 }
 
 function UserMenu() {
-  const { user, profile, tenantRole } = useApp();
+  const { user, profile, tenantRole, tenant, workspace } = useApp();
   const supabase = createClient();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -418,16 +421,38 @@ function UserMenu() {
   return (
     <div ref={ref} className="relative">
       <button aria-label="Account menu" onClick={() => setOpen((o) => !o)} className="flex items-center gap-1.5 rounded-full p-0.5 pr-1.5 hover:bg-panel-2">
-        <span className="grid size-9 place-items-center rounded-full bg-gradient-to-br from-brand-2 to-brand-deep text-sm font-bold text-on-brand">{name.slice(0, 1).toUpperCase()}</span>
+        <Avatar src={profile?.avatar_url} name={name} />
         <ChevronDown className="hidden size-4 text-faint sm:block" />
       </button>
       {open && (
-        <div className="animate-fade-up absolute right-0 z-50 mt-2 w-60 rounded-2xl border border-line bg-panel p-1.5 shadow-2xl">
-          <div className="px-3 py-2">
-            <p className="truncate text-sm font-medium">{name}</p>
-            <p className="truncate text-xs text-muted">{user.email}</p>
-            <p className="mt-1 text-[10px] uppercase tracking-wider text-brand-ink">{tenantRole}</p>
+        <div className="animate-fade-up absolute right-0 z-50 mt-2 w-72 rounded-2xl border border-line bg-panel p-1.5 shadow-2xl">
+          <div className="flex items-center gap-3 rounded-xl bg-panel-2 px-3 py-3">
+            <Avatar src={profile?.avatar_url} name={name} size="lg" />
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold">{name}</p>
+              <p className="truncate text-xs text-muted">{user.email}</p>
+              <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-ink">{roleLabel(tenantRole)}</p>
+            </div>
           </div>
+          <div className="space-y-1 px-3 py-2 text-xs text-muted">
+            <p className="flex justify-between gap-2">
+              <span>Organization</span>
+              <span className="truncate font-medium text-ink">{tenant.name}</span>
+            </p>
+            <p className="flex justify-between gap-2">
+              <span>Workspace</span>
+              <span className="truncate font-medium text-ink">{workspace.name}</span>
+            </p>
+            {user.last_sign_in_at && (
+              <p className="flex justify-between gap-2">
+                <span>Signed in</span>
+                <span className="font-medium text-ink">{formatDate(user.last_sign_in_at)}</span>
+              </p>
+            )}
+          </div>
+          <Link href="/app/profile" onClick={() => setOpen(false)} className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm hover:bg-panel-2">
+            <UserRound className="size-4" /> My profile
+          </Link>
           <Link href="/app/settings" onClick={() => setOpen(false)} className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm hover:bg-panel-2">
             <Settings className="size-4" /> Settings
           </Link>
@@ -447,6 +472,20 @@ function UserMenu() {
         </div>
       )}
     </div>
+  );
+}
+
+function SidebarUser({ onNavigate }: { onNavigate?: () => void }) {
+  const { user, profile, tenantRole } = useApp();
+  const name = profile?.full_name || user.email || "You";
+  return (
+    <Link href="/app/profile" onClick={onNavigate} className="m-3 flex items-center gap-3 rounded-2xl border border-line bg-panel-2 p-2.5 hover:border-brand/40">
+      <Avatar src={profile?.avatar_url} name={name} />
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-sm font-semibold">{name}</span>
+        <span className="block truncate text-[11px] text-faint">{roleLabel(tenantRole)}</span>
+      </span>
+    </Link>
   );
 }
 
@@ -482,6 +521,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <WorkspaceSwitcher />
       </div>
       <SideNav onNavigate={onNavigate} />
+      <SidebarUser onNavigate={onNavigate} />
     </>
   );
 

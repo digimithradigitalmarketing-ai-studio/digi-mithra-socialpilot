@@ -8,7 +8,7 @@ import type { Membership, Tenant, TenantRole, Workspace, WsRole } from "@/lib/ty
 
 interface AppState {
   user: User;
-  profile: { full_name: string | null; email: string | null } | null;
+  profile: { full_name: string | null; email: string | null; avatar_url: string | null } | null;
   memberships: Membership[];
   tenant: Tenant;
   tenantRole: TenantRole;
@@ -80,7 +80,7 @@ export function AppProvider({ children, fallback }: { children: React.ReactNode;
     }
     setUser(user);
     const [{ data: prof }, { data: mems }] = await Promise.all([
-      supabase.from("profiles").select("full_name,email").eq("id", user.id).maybeSingle(),
+      supabase.from("profiles").select("full_name,email,avatar_url").eq("id", user.id).maybeSingle(),
       supabase.from("tenant_members").select("tenant_id,user_id,role,tenants(*)").eq("user_id", user.id),
     ]);
     setProfile(prof ?? null);
